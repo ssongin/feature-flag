@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - "app/**"
+      - ".github/workflows/version-bump-lib.yaml"
 
 permissions:
   contents: write 

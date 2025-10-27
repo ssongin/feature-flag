@@ -83,14 +83,12 @@ func (c *Cluster) getRecursive(parts []string) (Node, error) {
 	}
 	current := parts[0]
 
-	// Traverse into sub-clusters
 	for _, sub := range c.Clusters {
 		if sub.Label == current {
 			return sub.getRecursive(parts[1:])
 		}
 	}
 
-	// If we're at the leaf, check all node types
 	if len(parts) == 1 {
 		label := parts[0]
 

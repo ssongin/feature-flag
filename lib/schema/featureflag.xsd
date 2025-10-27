@@ -1,0 +1,94 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Base node -->
+  <xs:complexType name="node">
+    <xs:sequence>
+      <xs:element name="label" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- string_node -->
+  <xs:complexType name="string_node">
+    <xs:complexContent>
+      <xs:extension base="node">
+        <xs:sequence>
+          <xs:element name="value" type="xs:string"/>
+          <xs:element name="default" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- boolean_node -->
+  <xs:complexType name="boolean_node">
+    <xs:complexContent>
+      <xs:extension base="node">
+        <xs:sequence>
+          <xs:element name="value" type="xs:boolean"/>
+          <xs:element name="default" type="xs:boolean"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- percentage_node -->
+  <xs:complexType name="percentage_node">
+    <xs:complexContent>
+      <xs:extension base="node">
+        <xs:sequence>
+          <xs:element name="value" type="percentageType"/>
+          <xs:element name="default" type="percentageType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="percentageType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- choice_node -->
+  <xs:complexType name="choice_node">
+    <xs:complexContent>
+      <xs:extension base="node">
+        <xs:sequence>
+          <xs:element name="value" type="xs:string"/>
+          <xs:element name="default" type="xs:string"/>
+          <xs:element name="options" type="options"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="options">
+    <xs:sequence>
+      <xs:element name="option" type="xs:string" minOccurs="2" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- cluster -->
+  <xs:complexType name="cluster">
+    <xs:sequence>
+      <xs:element name="label" type="xs:string"/>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="cluster" type="cluster"/>
+        <xs:element name="boolean_node" type="boolean_node"/>
+        <xs:element name="percentage_node" type="percentage_node"/>
+        <xs:element name="choice_node" type="choice_node"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- features root -->
+  <xs:element name="features">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="cluster" type="cluster" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

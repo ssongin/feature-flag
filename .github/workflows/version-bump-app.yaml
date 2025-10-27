@@ -1,9 +1,11 @@
-name: Version Bump
+name: Version Bump (Application)
 
 on:
   push:
     branches: [master]
-    
+    paths:
+      - "app/**"
+
 permissions:
   contents: write 
 

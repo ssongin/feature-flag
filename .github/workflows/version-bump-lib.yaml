@@ -8,8 +8,7 @@ on:
       - ".github/workflows/version-bump-lib.yaml"
 
 permissions:
-  contents: write
-  workflows: write
+  contents: write  # default token can push tags outside workflow files
 
 jobs:
   bump:
@@ -17,12 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # fetch all tags
 
-      - name: Extract last non-merge commit message
+      - name: Extract last non-merge commit message in lib/
         id: commit
         run: |
-          COMMIT_MSG=$(git log --no-merges -1 --pretty=%s)
+          COMMIT_MSG=$(git log --no-merges -1 --pretty=%s -- lib)
           echo "message=$COMMIT_MSG" >> $GITHUB_OUTPUT
 
       - name: Skip version bump for docs/test/Merge

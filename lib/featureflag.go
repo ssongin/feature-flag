@@ -1,31 +1,12 @@
 package featureflag
 
-import (
-	_ "embed"
-	"fmt"
-	"os"
-
-	xsdvalidate "github.com/terminalstatic/go-xsd-validate"
-)
-
-//go:embed schema/featureflag.xsd
-var featureFlagXSD []byte
-
-func ValidateXML(xmlPath string, xsdPath string) error {
-	xmlBytes, err := os.ReadFile(xmlPath)
-	if err != nil {
-		return fmt.Errorf("failed to read XML: %w", err)
+func ValidateAndParse(xmlPath string) (*Features, error) {
+	if err := validateXML(xmlPath); err != nil {
+		return nil, err
 	}
-
-	handler, err := xsdvalidate.NewXsdHandlerMem(featureFlagXSD, xsdvalidate.ParsErrDefault)
-	if err != nil {
-		return fmt.Errorf("failed to create XSD handler: %w", err)
+	if features, err := Parse(xmlPath); err != nil {
+		return nil, err
+	} else {
+		return &features, nil
 	}
-	defer handler.Free()
-
-	if err := handler.ValidateMem(xmlBytes, xsdvalidate.ValidErrDefault); err != nil {
-		return fmt.Errorf("XML validation failed: %w", err)
-	}
-
-	return nil
 }

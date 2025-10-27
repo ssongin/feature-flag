@@ -5,7 +5,7 @@ on:
     branches: [master]
     paths:
       - "lib/**"
-      - ".github/workflows/version-bump-lib.yml"
+      - ".github/workflows/version-bump-lib.yaml"
 
 permissions:
   contents: write

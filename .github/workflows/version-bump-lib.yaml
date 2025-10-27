@@ -62,7 +62,9 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
+          # Get latest commit touching lib/
+          commit=$(git log -n 1 --pretty=format:%H -- lib)
           tag="lib/v${{ steps.semver.outputs.version }}"
-          git tag "$tag"
+          git tag "$tag" "$commit"
           git push origin "$tag"
-          echo "✅ Tagged commit with $tag"
+          echo "Tagged lib/ commit with $tag"

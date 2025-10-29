@@ -68,7 +68,7 @@ func (f *Features) Get(path string) (Node, error) {
 		return nil, errors.New("empty path")
 	}
 
-	for _, cluster := range f.Cluster {
+	for _, cluster := range f.Clusters {
 		if cluster.Label == parts[0] {
 			return cluster.getRecursive(parts[1:])
 		}

@@ -3,28 +3,43 @@ package featureflag
 import (
 	_ "embed"
 	"fmt"
-	"os"
 
-	xsdvalidate "github.com/terminalstatic/go-xsd-validate"
+	"github.com/xeipuuv/gojsonschema"
+	"gopkg.in/yaml.v3"
 )
 
-//go:embed schema/featureflag.xsd
-var featureFlagXSD []byte
+//go:embed schema/featureflag.schema.json
+var featureFlagSchema []byte
 
-func validateXML(xmlPath string) error {
-	xmlBytes, err := os.ReadFile(xmlPath)
+var schemaLoader gojsonschema.JSONLoader
+var schema *gojsonschema.Schema
+
+func init() {
+	schemaLoader = gojsonschema.NewBytesLoader(featureFlagSchema)
+	var err error
+	schema, err = gojsonschema.NewSchema(schemaLoader)
 	if err != nil {
-		return fmt.Errorf("failed to read XML: %w", err)
+		panic(fmt.Sprintf("schema compile error: %v", err))
+	}
+}
+
+func ValidateYAML(yamlBytes []byte) error {
+	var doc interface{}
+	if err := yaml.Unmarshal(yamlBytes, &doc); err != nil {
+		return fmt.Errorf("invalid YAML: %w", err)
 	}
 
-	handler, err := xsdvalidate.NewXsdHandlerMem(featureFlagXSD, xsdvalidate.ParsErrDefault)
+	result, err := schema.Validate(gojsonschema.NewGoLoader(doc))
 	if err != nil {
-		return fmt.Errorf("failed to create XSD handler: %w", err)
+		return fmt.Errorf("validation error: %w", err)
 	}
-	defer handler.Free()
 
-	if err := handler.ValidateMem(xmlBytes, xsdvalidate.ValidErrDefault); err != nil {
-		return fmt.Errorf("XML validation failed: %w", err)
+	if !result.Valid() {
+		var errs []string
+		for _, desc := range result.Errors() {
+			errs = append(errs, desc.String())
+		}
+		return fmt.Errorf("validation failed:\n%s", errs)
 	}
 
 	return nil

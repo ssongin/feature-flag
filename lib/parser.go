@@ -1,65 +1,57 @@
 package featureflag
 
 import (
-	"encoding/xml"
-	"os"
+	"fmt"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Features struct {
-	XMLName xml.Name  `xml:"features"`
-	Cluster []Cluster `xml:"cluster"`
+	Clusters []Cluster `yaml:"clusters"`
 }
 
 type Cluster struct {
-	Label        string           `xml:"label"`
-	Clusters     []Cluster        `xml:"cluster"`
-	BooleanNodes []BooleanNode    `xml:"boolean_node"`
-	PercentNodes []PercentageNode `xml:"percentage_node"`
-	StringNodes  []StringNode     `xml:"string_node"`
-	ChoiceNodes  []ChoiceNode     `xml:"choice_node"`
+	Label        string           `yaml:"label"`
+	Clusters     []Cluster        `yaml:"clusters"`
+	BooleanNodes []BooleanNode    `yaml:"boolean_node"`
+	PercentNodes []PercentageNode `yaml:"percentage_node"`
+	StringNodes  []StringNode     `yaml:"string_node"`
+	ChoiceNodes  []ChoiceNode     `yaml:"choice_node"`
 }
 
 type BooleanNode struct {
-	Label   string `xml:"label"`
-	Value   bool   `xml:"value"`
-	Default bool   `xml:"default"`
+	Label   string `yaml:"label"`
+	Value   bool   `yaml:"value"`
+	Default bool   `yaml:"default"`
 }
 
 type StringNode struct {
-	Label   string `xml:"label"`
-	Value   string `xml:"value"`
-	Default string `xml:"default"`
+	Label   string `yaml:"label"`
+	Value   string `yaml:"value"`
+	Default string `yaml:"default"`
 }
 
 type PercentageNode struct {
-	Label   string `xml:"label"`
-	Value   int    `xml:"value"`
-	Default int    `xml:"default"`
+	Label   string `yaml:"label"`
+	Value   int    `yaml:"value"`
+	Default int    `yaml:"default"`
 }
 
 type ChoiceNode struct {
-	Label   string  `xml:"label"`
-	Value   string  `xml:"value"`
-	Default string  `xml:"default"`
-	Options Options `xml:"options"`
+	Label   string  `yaml:"label"`
+	Value   string  `yaml:"value"`
+	Default string  `yaml:"default"`
+	Options Options `yaml:"options"`
 }
 
 type Options struct {
-	Option []string `xml:"option"`
+	Option []string `yaml:"option"`
 }
 
-func Parse(path string) (Features, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return Features{}, err
-	}
-
-	defer file.Close()
-
+func ParseYAML(yamlData []byte) (Features, error) {
 	var features Features
-	if err := xml.NewDecoder(file).Decode(&features); err != nil {
-		return Features{}, err
+	if err := yaml.Unmarshal(yamlData, &features); err != nil {
+		return Features{}, fmt.Errorf("failed to parse YAML: %w", err)
 	}
-
 	return features, nil
 }

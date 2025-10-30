@@ -20,6 +20,20 @@ func (f *Features) GetChoiceValue(path string) (string, error) {
 	return cnode.Value, nil
 }
 
+func (f *Features) GetChoiceOptions(path string) ([]string, error) {
+	node, err := f.Get(path)
+	if err != nil {
+		return nil, err
+	}
+
+	cnode, ok := node.(*ChoiceNode)
+	if !ok {
+		return nil, fmt.Errorf("node at %q is not a ChoiceNode", path)
+	}
+
+	return cnode.Options, nil
+}
+
 func (f *Features) GetPercentageValue(path string) (int, error) {
 	node, err := f.Get(path)
 	if err != nil {

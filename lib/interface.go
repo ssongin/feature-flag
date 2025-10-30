@@ -59,24 +59,27 @@ func (n *PercentageNode) Reset() {
 	n.Value = n.Default
 }
 
-func (n *ChoiceNode) GetLabel() string        { return n.Label }
-func (n *ChoiceNode) NodeType() string        { return "choice" }
-func (n *ChoiceNode) GetValue() interface{}   { return n.Value }
-func (n *ChoiceNode) GetDefault() interface{} { return n.Default }
+func (n *ChoiceNode) GetLabel() string           { return n.Label }
+func (n *ChoiceNode) NodeType() string           { return "choice" }
+func (n *ChoiceNode) GetValue() interface{}      { return n.Value }
+func (n *ChoiceNode) GetDefault() interface{}    { return n.Default }
+func (n *ChoiceNode) GetChoiceOptions() []string { return n.GetChoiceOptions() }
+
 func (n *ChoiceNode) SetValue(v interface{}) error {
 	s, ok := v.(string)
 	if !ok {
 		return errors.New("invalid type for ChoiceNode, expected string")
 	}
-	// Validate against allowed options
-	for _, opt := range n.Options.Option {
+
+	for _, opt := range n.Options {
 		if opt == s {
 			n.Value = s
 			return nil
 		}
 	}
-	return errors.New("invalid choice value")
+	return errors.New("invalid choice value: " + s)
 }
+
 func (n *ChoiceNode) Reset() {
 	n.Value = n.Default
 }

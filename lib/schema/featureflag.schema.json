@@ -62,17 +62,6 @@
         }
       ]
     },
-    "options": {
-      "type": "object",
-      "properties": {
-        "option": {
-          "type": "array",
-          "minItems": 2,
-          "items": { "type": "string" }
-        }
-      },
-      "required": ["option"]
-    },
     "choice_node": {
       "allOf": [
         { "$ref": "#/$defs/node" },
@@ -81,7 +70,11 @@
           "properties": {
             "value": { "type": "string" },
             "default": { "type": "string" },
-            "options": { "$ref": "#/$defs/options" }
+            "options": {
+              "type": "array",
+              "minItems": 2,
+              "items": { "type": "string" }
+            }
           },
           "required": ["value", "default", "options"]
         }

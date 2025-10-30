@@ -7,7 +7,7 @@ import (
 func TestValidateYAML_Valid(t *testing.T) {
 	yamlData := `
 features:
-  cluster:
+  clusters:
     - label: "root"
       boolean_node:
         - label: "flag1"
@@ -32,7 +32,7 @@ features:
 func TestValidateYAMLWithMultipleNodes_Valid(t *testing.T) {
 	yamlData := `
 features:
-  cluster:
+  clusters:
     - label: "root"
       boolean_node:
         - label: "flag1"
@@ -41,7 +41,7 @@ features:
         - label: "flag2"
           value: false
           default: false
-      cluster:
+      clusters:
         - label: "child"
           boolean_node:
             - label: "flag3"
@@ -56,7 +56,7 @@ features:
 func TestValidateYAML_MissingLabel(t *testing.T) {
 	yamlData := `
 features:
-  cluster:
+  clusters:
     - boolean_node:
         - label: "flag1"
           value: true
@@ -70,7 +70,7 @@ features:
 func TestValidateYAML_InvalidType(t *testing.T) {
 	yamlData := `
 features:
-  cluster:
+  clusters:
     - label: "root"
       boolean_node:
         - label: "flag1"
@@ -85,7 +85,7 @@ features:
 func TestValidateYAML_PercentageOutOfRange(t *testing.T) {
 	yamlData := `
 features:
-  cluster:
+  clusters:
     - label: "root"
       percentage_node:
         - label: "p1"
@@ -100,7 +100,7 @@ features:
 func TestValidateYAML_TooFewOptions(t *testing.T) {
 	yamlData := `
 features:
-  cluster:
+  clusters:
     - label: "root"
       choice_node:
         - label: "c1"
@@ -114,12 +114,12 @@ features:
 	}
 }
 
-func TestValidateYAML_EmptyCluster(t *testing.T) {
+func TestValidateYAML_Emptyclusters(t *testing.T) {
 	yamlData := `
 features:
-  cluster: []
+  clusters: []
 `
 	if err := ValidateYAML([]byte(yamlData)); err == nil {
-		t.Fatal("expected validation error for empty cluster array, got nil")
+		t.Fatal("expected validation error for empty clusters array, got nil")
 	}
 }

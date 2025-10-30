@@ -5,13 +5,13 @@
     "features": {
       "type": "object",
       "properties": {
-        "cluster": {
+        "clusters": {
           "type": "array",
           "minItems": 1,
-          "items": { "$ref": "#/$defs/cluster" }
+          "items": { "$ref": "#/$defs/clusters" }
         }
       },
-      "required": ["cluster"]
+      "required": ["clusters"]
     }
   },
   "required": ["features"],
@@ -87,13 +87,13 @@
         }
       ]
     },
-    "cluster": {
+    "clusters": {
       "type": "object",
       "properties": {
         "label": { "type": "string" },
-        "cluster": {
+        "clusters": {
           "type": "array",
-          "items": { "$ref": "#/$defs/cluster" }
+          "items": { "$ref": "#/$defs/clusters" }
         },
         "boolean_node": {
           "type": "array",

@@ -14,11 +14,11 @@ type Features struct {
 
 type Cluster struct {
 	Label        string           `yaml:"label"`
-	Clusters     []Cluster        `yaml:"clusters"`
-	BooleanNodes []BooleanNode    `yaml:"boolean_node"`
-	PercentNodes []PercentageNode `yaml:"percentage_node"`
-	StringNodes  []StringNode     `yaml:"string_node"`
-	ChoiceNodes  []ChoiceNode     `yaml:"choice_node"`
+	Clusters     []Cluster        `yaml:"clusters,omitempty"`
+	BooleanNodes []BooleanNode    `yaml:"boolean_node,omitempty"`
+	PercentNodes []PercentageNode `yaml:"percentage_node,omitempty"`
+	StringNodes  []StringNode     `yaml:"string_node,omitempty"`
+	ChoiceNodes  []ChoiceNode     `yaml:"choice_node,omitempty"`
 }
 
 type BooleanNode struct {

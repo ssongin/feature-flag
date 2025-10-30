@@ -23,8 +23,9 @@ features:
           value: "a"
           default: "b"
           options:
-            option: ["a", "b"]
-`
+            - a
+            - b`
+
 	if features, err := ParseYAML([]byte(yamlData)); err != nil {
 		t.Fatalf("expected valid YAML, got error: %v", err)
 	} else {

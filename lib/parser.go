@@ -1,7 +1,6 @@
 package featureflag
 
 import (
-	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -52,7 +51,7 @@ type ChoiceNode struct {
 func ParseYAML(path string) (Features, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		log.Fatalf("Failed to read file: %v", err)
+		return Features{}, err
 	}
 
 	var root Root

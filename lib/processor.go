@@ -4,82 +4,74 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/ssongin/core"
 )
 
-func (f *Features) GetChoiceValue(path string) (string, error) {
-	node, err := f.Get(path)
-	if err != nil {
-		return "", err
-	}
+func (f *Features) GetChoiceValue(path string) string {
+	node := f.Get(path)
 
 	cnode, ok := node.(*ChoiceNode)
 	if !ok {
-		return "", fmt.Errorf("node at %q is not a ChoiceNode", path)
+		core.CheckError("GetChoiceValue: type assertion failed", fmt.Errorf("node at %q is not a ChoiceNode", path))
+		return ""
 	}
 
-	return cnode.Value, nil
+	return cnode.Value
 }
 
-func (f *Features) GetChoiceOptions(path string) ([]string, error) {
-	node, err := f.Get(path)
-	if err != nil {
-		return nil, err
-	}
+func (f *Features) GetChoiceOptions(path string) []string {
+	node := f.Get(path)
 
 	cnode, ok := node.(*ChoiceNode)
 	if !ok {
-		return nil, fmt.Errorf("node at %q is not a ChoiceNode", path)
+		core.CheckError("GetChoiceOptions: type assertion failed", fmt.Errorf("node at %q is not a ChoiceNode", path))
+		return nil
 	}
 
-	return cnode.Options, nil
+	return cnode.Options
 }
 
-func (f *Features) GetPercentageValue(path string) (int, error) {
-	node, err := f.Get(path)
-	if err != nil {
-		return 0, err
-	}
+func (f *Features) GetPercentageValue(path string) int {
+	node := f.Get(path)
 
 	pnode, ok := node.(*PercentageNode)
 	if !ok {
-		return 0, fmt.Errorf("node at %q is not a PercentageNode", path)
+		core.CheckError("GetPercentageValue: type assertion failed", fmt.Errorf("node at %q is not a PercentageNode", path))
+		return 0
 	}
 
-	return pnode.Value, nil
+	return pnode.Value
 }
 
-func (f *Features) GetStringValue(path string) (string, error) {
-	node, err := f.Get(path)
-	if err != nil {
-		return "", err
-	}
+func (f *Features) GetStringValue(path string) string {
+	node := f.Get(path)
 
 	snode, ok := node.(*StringNode)
 	if !ok {
-		return "", fmt.Errorf("node at %q is not a StringNode", path)
+		core.CheckError("GetStringValue: type assertion failed", fmt.Errorf("node at %q is not a StringNode", path))
+		return ""
 	}
 
-	return snode.Value, nil
+	return snode.Value
 }
 
-func (f *Features) GetBoolValue(path string) (bool, error) {
-	node, err := f.Get(path)
-	if err != nil {
-		return false, err
-	}
+func (f *Features) GetBoolValue(path string) bool {
+	node := f.Get(path)
 
 	bnode, ok := node.(*BooleanNode)
 	if !ok {
-		return false, fmt.Errorf("node at %q is not a BooleanNode", path)
+		core.CheckError("GetBoolValue: type assertion failed", fmt.Errorf("node at %q is not a BooleanNode", path))
+		return false
 	}
 
-	return bnode.Value, nil
+	return bnode.Value
 }
 
-func (f *Features) Get(path string) (Node, error) {
+func (f *Features) Get(path string) Node {
 	parts := strings.Split(path, ".")
 	if len(parts) == 0 {
-		return nil, errors.New("empty path")
+		core.CheckError("Get: empty path", errors.New("empty path"))
 	}
 
 	for _, cluster := range f.Clusters {
@@ -88,12 +80,14 @@ func (f *Features) Get(path string) (Node, error) {
 		}
 	}
 
-	return nil, errors.New("cluster not found: " + parts[0])
+	core.CheckError("Features: get", errors.New("Cluster not found: "+parts[0]))
+	return nil
 }
 
-func (c *Cluster) getRecursive(parts []string) (Node, error) {
+func (c *Cluster) getRecursive(parts []string) Node {
 	if len(parts) == 0 {
-		return nil, errors.New("no node label specified")
+		core.CheckError("getRecursive:", errors.New("no node label specified"))
+		return nil
 	}
 	current := parts[0]
 
@@ -108,27 +102,28 @@ func (c *Cluster) getRecursive(parts []string) (Node, error) {
 
 		for i := range c.BooleanNodes {
 			if c.BooleanNodes[i].Label == label {
-				return &c.BooleanNodes[i], nil
+				return &c.BooleanNodes[i]
 			}
 		}
 		for i := range c.StringNodes {
 			if c.StringNodes[i].Label == label {
-				return &c.StringNodes[i], nil
+				return &c.StringNodes[i]
 			}
 		}
 		for i := range c.PercentNodes {
 			if c.PercentNodes[i].Label == label {
-				return &c.PercentNodes[i], nil
+				return &c.PercentNodes[i]
 			}
 		}
 		for i := range c.ChoiceNodes {
 			if c.ChoiceNodes[i].Label == label {
-				return &c.ChoiceNodes[i], nil
+				return &c.ChoiceNodes[i]
 			}
 		}
 
-		return nil, errors.New("node not found: " + label)
+		core.CheckError("getRecursive:", errors.New("node not found: "+label))
+		return nil
 	}
-
-	return nil, errors.New("invalid path: " + strings.Join(parts, "."))
+	core.CheckError("getRecursive:", errors.New("invalid path: "+strings.Join(parts, ".")))
+	return nil
 }

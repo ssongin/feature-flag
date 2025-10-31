@@ -37,10 +37,7 @@ func mockFeatures() *Features {
 
 func TestGetBoolValue_Success(t *testing.T) {
 	f := mockFeatures()
-	val, err := f.GetBoolValue("MainCluster.Enabled")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	val := f.GetBoolValue("MainCluster.Enabled")
 	if !val {
 		t.Errorf("expected true, got %v", val)
 	}
@@ -48,10 +45,7 @@ func TestGetBoolValue_Success(t *testing.T) {
 
 func TestGetChoiceValue_Success(t *testing.T) {
 	f := mockFeatures()
-	val, err := f.GetChoiceValue("MainCluster.Mode")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	val := f.GetChoiceValue("MainCluster.Mode")
 	if val != "auto" {
 		t.Errorf("expected 'auto', got %q", val)
 	}
@@ -59,10 +53,7 @@ func TestGetChoiceValue_Success(t *testing.T) {
 
 func TestGetPercentageValue_Success(t *testing.T) {
 	f := mockFeatures()
-	val, err := f.GetPercentageValue("MainCluster.Threshold")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	val := f.GetPercentageValue("MainCluster.Threshold")
 	if val != 75 {
 		t.Errorf("expected 75, got %d", val)
 	}
@@ -70,10 +61,7 @@ func TestGetPercentageValue_Success(t *testing.T) {
 
 func TestGetStringValue_Success(t *testing.T) {
 	f := mockFeatures()
-	val, err := f.GetStringValue("MainCluster.Username")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	val := f.GetStringValue("MainCluster.Username")
 	if val != "admin" {
 		t.Errorf("expected 'admin', got %q", val)
 	}
@@ -81,10 +69,7 @@ func TestGetStringValue_Success(t *testing.T) {
 
 func TestGetBoolValue_FromNestedCluster(t *testing.T) {
 	f := mockFeatures()
-	val, err := f.GetBoolValue("MainCluster.SubCluster.BetaFeature")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	val := f.GetBoolValue("MainCluster.SubCluster.BetaFeature")
 	if val {
 		t.Errorf("expected false, got %v", val)
 	}
@@ -92,23 +77,41 @@ func TestGetBoolValue_FromNestedCluster(t *testing.T) {
 
 func TestGet_InvalidPath(t *testing.T) {
 	f := mockFeatures()
-	_, err := f.Get("NonExistentCluster.Node")
-	if err == nil {
-		t.Fatalf("expected error for invalid path, got nil")
-	}
-	if err.Error() != "cluster not found: NonExistentCluster" {
-		t.Errorf("unexpected error message: %v", err)
-	}
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fatalf("expected panic for invalid path, got none")
+		} else {
+			if err, ok := r.(error); ok {
+				if err.Error() != "Cluster not found: NonExistentCluster" {
+					t.Errorf("unexpected panic message: %v", err)
+				}
+			} else if s, ok := r.(string); ok {
+				if s != "Cluster not found: NonExistentCluster" {
+					t.Errorf("unexpected panic message: %v", s)
+				}
+			}
+		}
+	}()
+	_ = f.Get("NonExistentCluster.Node")
 }
 
 func TestGet_WrongNodeType(t *testing.T) {
 	f := mockFeatures()
-	_, err := f.GetBoolValue("MainCluster.Username")
-	if err == nil {
-		t.Fatalf("expected type error, got nil")
-	}
-	expected := `node at "MainCluster.Username" is not a BooleanNode`
-	if err.Error() != expected {
-		t.Errorf("unexpected error message: %v", err)
-	}
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fatalf("expected panic for type error, got none")
+		} else {
+			expected := `node at "MainCluster.Username" is not a BooleanNode`
+			if err, ok := r.(error); ok {
+				if err.Error() != expected {
+					t.Errorf("unexpected panic message: %v", err)
+				}
+			} else if s, ok := r.(string); ok {
+				if s != expected {
+					t.Errorf("unexpected panic message: %v", s)
+				}
+			}
+		}
+	}()
+	_ = f.GetBoolValue("MainCluster.Username")
 }
